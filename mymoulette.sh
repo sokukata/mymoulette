@@ -19,7 +19,10 @@
 
 #chroot newrooot unshare -C -i -m -n -p -u -U $@
 
-mkdir /mnt/newroot && debootstrap stable /mnt/newroot/ http://httpredir.debian.org/debian/
+mkdir /mnt/newroot  #debootstrap stable /mnt/newroot/ http://httpredir.debian.org/debian/
+mount -t tmpfs none /mnt/newroot
+cp -r /mnt/debootstrap/* /mnt/newroot/
+
 
 cmd="mount --make-rslave /;"
 
@@ -48,4 +51,4 @@ cmd=$cmd"echo 100 > /sys/fs/cgroup/pids/mymoulette/pids.max;"
 
 cmd=$cmd"exec chroot /  /bin/bash -c \"$@\";"
 
-unshare -C -i -m -n -p -u -U --mount-proc /bin/bash -c "$cmd"
+unshare -p -m -f --mount-proc /bin/bash -c "$cmd"
