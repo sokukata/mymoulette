@@ -61,7 +61,7 @@ cmd=$cmd"echo 100 > /sys/fs/cgroup/pids/mymoulette/pids.max;"
 
 cmd=$cmd"hostname $(uuidgen);"
 
-cmd=$cmd"/sbin/capsh --drop=cap_net_raw --chroot=/ -- -c \"unshare -U /bin/bash -c '/home/$name $@' \";"
+cmd=$cmd"/sbin/capsh --drop=cap_net_raw --chroot=/ -- -c \"unshare -U /bin/bash -c 'cd home/;$name $@' \";"
 
 unshare -C -i -m -n -p -u  -f --mount-proc /bin/bash -c "$cmd"
 
