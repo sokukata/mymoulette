@@ -1,24 +1,5 @@
 #! /bin/bash
 
-#mkdir -p /sys/fs/cgroup/memory/mymoulette
-#mkdir -p /sys/fs/cgroup/cpu/mymoulette
-#mkdir -p /sys/fs/cgroup/pids/mymoulette
-
-#echo $$ > /sys/fs/cgroup/memory/mymoulette/tasks
-#echo $$ > /sys/fs/cgroup/cpu/mymoulette/tasks
-#echo $$ > /sys/fs/cgroup/pids/mymoulette/tasks
-
-#echo 1G > /sys/fs/cgroup/memory/mymoulette/memory.limit_in_bytes
-#echo 10000 > /sys/fs/cgroup/cpu/mymoulette/cpu.cfs_quota_us
-#echo 100 > /sys/fs/cgroup/pids/mymoulette/pids.max
-
-#mkdir newroot && debootstrap stable newroot/ http://httpredir.debian.org/debian/
-
-#chroot newroot setcap cap_net_raw-epi $(which $1)
-
-
-#chroot newrooot unshare -C -i -m -n -p -u -U $@
-
 mkdir /mnt/newroot  #debootstrap stable /mnt/newroot/ http://httpredir.debian.org/debian/
 mount -t tmpfs none /mnt/newroot
 cp -r /mnt/debootstrap/* /mnt/newroot/
@@ -61,8 +42,13 @@ cmd=$cmd"echo 100 > /sys/fs/cgroup/pids/mymoulette/pids.max;"
 
 cmd=$cmd"hostname $(uuidgen);"
 
-cmd=$cmd"/sbin/capsh --drop=cap_net_raw --chroot=/ -- -c \"unshare -U /bin/bash -c 'cd home/;$name $@' \";"
+cmd=$cmd"ip netns add mymoul;"
+cmd=$cmd"ip netns exec mymoul ip link;"
 
-unshare -C -i -m -n -p -u  -f --mount-proc /bin/bash -c "$cmd"
+
+#cmd=$cmd"unshare -U -n -f --map-root-user capsh --drop=cap_net_raw,cap_sys_chroot,cap_setfcap,cap_setpcap --chroot=/ -- -c \"/bin/bash -c 'cd home/;$name $@'\";"
+cmd=$cmd"unshare -f capsh --drop=cap_net_raw,cap_sys_chroot,cap_setfcap,cap_setpcap --chroot=/ -- -c \"/bin/bash -c 'cd home/;$name $@'\";"
+
+unshare -C -i -m -p -u -f --mount-proc /bin/bash -c "$cmd"
 
 rm /mnt/newroot/home/$name
