@@ -6,9 +6,9 @@ cp -r /mnt/debootstrap/* /mnt/newroot/
 
 cp $1 /mnt/newroot/home/
 
-cp /usr/bin/unshare /mnt/newroot/bin/
+cp /usr/bin/unshare /mnt/newroot/usr/bin/
 cp /sbin/capsh /mnt/newroot/sbin/
-cp /usr/bin/curl /mnt/newroot/home/usr/bin/
+cp /usr/bin/curl /mnt/newroot/usr/bin/
 
 name=$(basename $1)
 shift
